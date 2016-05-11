@@ -54,8 +54,7 @@ function findUser(user, not_found_func, found_func) {
 			else {
 				var found = false;
 				for(var row in result.rows) {
-					console.log('comparing ' + user + ' to ' + row['email']);
-					if(row['email'] === user) {
+					if(results.rows[row]['email'] === user) {
 						found = true;
 						break;
 					}
