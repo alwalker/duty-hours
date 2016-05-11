@@ -1,0 +1,25 @@
+{
+  "name": "duty-hours",
+  "version": "0.0.1",
+  "description": "Code Exercise For Premise Health Application",
+  "engines": {
+    "node": "5.11.1"
+  },
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "4.13.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alwalker/duty-hours"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "express"
+  ],
+  "license": "BSD"
+}
