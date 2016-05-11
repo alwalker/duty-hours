@@ -1,32 +1,39 @@
 var express = require('express');
 var pg = require('pg');
+var bodyParser = require('body-parser');
 var app = express();
 
 app.set('port', (process.env.PORT || 5000));
+app.use(bodyParser.json());
 
 app.get('/', function(request, response) {
 	response.send('Woooo!');
-});
-
-app.get('/api/users', function (request, response) {
-	pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-		if (err)
-			{ console.error(err); response.send("Error " + err); }
-		client.query('SELECT * FROM users', function(err, result) {
-			done();
-			if (err)
-				{ console.error(err); response.send("Error " + err); }
-			else
-				{ response.send({results: result.rows}); }
-		});
-	});
 });
 
 app.put('/api/:user/shift', function(request, response) {
 	findUser(
 		request.params.user,
 		function() {response.send("Couldn't find user!");}, 
-		function() {response.send("Found user!")})
+		function(user) {
+			pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+				if (err) { 
+					console.error(err); response.send("Error " + err); 
+				}
+				client.query(
+					'INSERT INTO shifts (user_id, start_dt, end_dt) VALUES($1,$2,$3)',
+					[user['id'], request.body.start, request.body.end],
+					function(err, result) {
+						done();
+						if (err) { 
+							console.error(err); 
+							response.send("Error adding shift to database"); 
+						}
+						else { 
+							response.send('Ok!'); 
+						}
+					});
+			});
+		});
 });
 
 app.listen(app.get('port'), function() {
@@ -52,22 +59,15 @@ function findUser(user, not_found_func, found_func) {
 				return;
 			}
 			else {
-				var found = false;
 				for(var row in result.rows) {
 					if(result.rows[row]['email'] === user) {
-						found = true;
-						break;
+						console.log('found them!');
+						found_func(result.rows[row]);
+						return;
 					}
 				}
-
-				if(found) {
-					console.log('found them!');
-					found_func();
-				}
-				else {
-					console.log('not found!');
-					not_found_func();
-				}
+				console.log('not found!');
+				not_found_func();
 			}
 		});
 	});
