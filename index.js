@@ -71,6 +71,8 @@ app.get('/api/:user/shift-analysis', function(request, response) {
 		function() {response.send("Couldn't find user!");}, 
 		function(user) {
 			//Assuming user IDs are passed in here for simplicity
+			//Also note there should be some validation that if users query param is 
+			//populated the user url param should be an admin
 			var users = request.query.users || [user['id']];
 			var start_date = new Date(request.query.start + ' 00:00:00');
 			var end_date = new Date(start_date);
